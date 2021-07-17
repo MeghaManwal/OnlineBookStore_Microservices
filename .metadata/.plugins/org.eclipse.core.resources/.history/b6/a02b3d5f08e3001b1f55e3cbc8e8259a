@@ -1,0 +1,21 @@
+package com.microservices.bookservice.repository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.microservices.bookservice.model.BookData;
+import com.microservices.bookservice.model.CartDetails;
+import com.microservices.bookservice.model.UserData;
+
+
+@Repository
+public interface CartDetailsRepository extends JpaRepository<CartDetails, UUID> {
+
+	Optional<CartDetails> findByUserData(UserData userdata);
+	//Optional<CartDetails> findByUserId(UUID UserId);
+
+	Optional<BookData> findByUserId(UUID id);
+}

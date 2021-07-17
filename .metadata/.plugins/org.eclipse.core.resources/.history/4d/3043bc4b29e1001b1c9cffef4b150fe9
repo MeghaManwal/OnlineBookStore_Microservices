@@ -1,0 +1,5 @@
+package com.microservices.userservices.repository;
+
+public class UserDataRepository {
+
+}

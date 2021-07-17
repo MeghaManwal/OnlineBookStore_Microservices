@@ -1,0 +1,5 @@
+package com.microservices.bookservice.model;
+
+public class CustomerData {
+
+}

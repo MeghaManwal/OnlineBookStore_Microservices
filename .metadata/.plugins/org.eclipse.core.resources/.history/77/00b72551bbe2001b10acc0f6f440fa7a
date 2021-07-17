@@ -1,0 +1,5 @@
+package com.microservices.bookservice.exception;
+
+public class BookStoreException {
+
+}

@@ -1,0 +1,46 @@
+package com.microservices.bookservice.service;
+
+import java.util.List;
+
+import com.microservices.bookservice.dto.BookDataDTO;
+import com.microservices.bookservice.model.BookData;
+
+public class BookService implements IBookService {
+
+	@Override
+	public BookData addNewBook(BookDataDTO bookdatadto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BookData> getAllBooks() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getbookscount() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BookData> displaybyHighertoLowerPrice() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BookData> displaybyLowertoHigherPrice() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BookData> displayBooksbyDateOfArrival() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

@@ -1,0 +1,140 @@
+package com.microservices.bookservice.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.microservices.bookservice.dto.CartDataDTO;
+import com.microservices.bookservice.dto.UpdateCartDTO;
+import com.microservices.bookservice.exception.BookStoreException;
+import com.microservices.bookservice.model.BookCartData;
+import com.microservices.bookservice.model.BookData;
+import com.microservices.bookservice.model.CartDetails;
+import com.microservices.bookservice.model.UserData;
+import com.microservices.bookservice.repository.BookCartRepository;
+import com.microservices.bookservice.repository.BookDataRepository;
+import com.microservices.bookservice.repository.CartDetailsRepository;
+import com.microservices.bookservice.utils.Token;
+
+@Service
+public class CartService implements ICartService {
+
+    Token jwtToken = new Token();
+		
+	@Autowired
+	CartDetailsRepository cartrepository;
+	
+	@Autowired
+	BookCartRepository bookcartrepository;
+	
+	@Autowired
+	BookDataRepository bookdatarepository;
+	
+	@Autowired
+    private RestTemplate restTemplate;
+	
+	@Override
+	public String addBookToCart(CartDataDTO cartdto, String token) {
+		UUID userId = jwtToken.decodeJWT(token);
+		UserData findExistingUser = findByUserId(userId);
+		
+		CartDetails cartdetails = cartrepository.findByUserData(findExistingUser).orElseThrow(() -> new
+				BookStoreException(BookStoreException.ExceptionTypes.CART_NOT_PRESENT));
+		
+		BookData bookById = bookdatarepository.findById(cartdto.getBookId())
+				            .orElseThrow(() -> new
+				              BookStoreException(BookStoreException.ExceptionTypes.BOOK_NOT_FOUND));
+		
+		List<BookCartData> cartlist = new ArrayList<>();
+		BookCartData cartdata = new BookCartData(cartdto);
+		
+		cartlist.add(cartdata);
+		cartdetails.getCartdata().add(cartdata);
+		cartdetails.setCartdata(cartlist);
+		cartrepository.save(cartdetails);
+		
+		cartdata.setCartDetails(cartdetails);
+		cartdata.setBookdata(bookById);
+		BookCartData savebooksTocart = bookcartrepository.save(cartdata);
+		
+		return "Book added successfully";
+	}
+
+	private UserData findByUserId(UUID userId) {
+		UserData userdata = restTemplate.
+                getForObject("http://localhost:8081/user/getuser?userEmailToken= "+userId,
+                        UserData.class);
+
+        if(userdata == null){
+            throw new BookStoreException(BookStoreException.ExceptionTypes.USER_NOT_FOUND);
+        }
+
+        return userdata;
+	}
+
+	@Override
+	public CartDetails setCart(String token) {
+		CartDetails cartdetails = new CartDetails();
+		 UserData userdata = restTemplate.
+	                getForObject("http://localhost:8081/user/getuser?userEmailToken= "+token,
+	                        UserData.class);
+		cartdetails.setUserData(userdata);
+		
+		cartrepository.save(cartdetails);
+		return cartdetails;
+	}
+
+	@Override
+	public List<BookCartData> displayBooksFromCart(String token) {
+		UUID userId = jwtToken.decodeJWT(token);
+		UserData findExistingUser = findByUserId(userId);
+		
+		return bookcartrepository.findAll()
+				.stream()
+				.map(bookCartData -> new BookCartData(bookCartData))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public String deleteBookFromCart(UUID bookId, String token) {
+		UUID userId = jwtToken.decodeJWT(token);
+		UserData findExistingUser = findByUserId(userId);
+		 
+		 Optional<BookCartData> findbookById =bookcartrepository.findByBookdataBookId(bookId);
+		 if (!findbookById.isPresent()){
+	            throw new BookStoreException(BookStoreException.ExceptionTypes.BOOK_NOT_FOUND);
+	      }
+		 
+		 BookData searchbookbyId = bookdatarepository.findById(bookId)
+				                   .orElseThrow(()-> new BookStoreException(BookStoreException.ExceptionTypes.BOOK_NOT_FOUND));
+
+		 bookdatarepository.save(searchbookbyId);
+		 bookcartrepository.deleteById(findbookById.get().getCartdataId());
+		return "Book REMOVED Successfully";
+	}
+
+	@Override
+	public String updateCartData(UpdateCartDTO updatedto, String token) {
+		UUID userId = jwtToken.decodeJWT(token);
+	     
+		UserData findExistingUser = findByUserId(userId);
+                 
+		BookCartData cartdata = bookcartrepository.findByBookdataBookId(updatedto.getBookId())
+				             .orElseThrow(() -> new BookStoreException(BookStoreException.ExceptionTypes.BOOK_NOT_FOUND));
+		
+		System.out.println(cartdata);
+		 
+		cartdata.setQuantity(updatedto.getQuantity());
+		cartdata.setTotalprice(updatedto.getTotalprice());
+	    bookcartrepository.save(cartdata);
+	     
+		return "Changes save Successfully";
+	}
+
+}

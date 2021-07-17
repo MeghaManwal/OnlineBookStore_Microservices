@@ -1,0 +1,16 @@
+package com.microservices.userservices.repository;
+
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.google.common.base.Optional;
+import com.microservices.userservices.model.UserData;
+
+@Repository
+public interface UserDataRepository extends JpaRepository<UserData, UUID> {
+	
+	java.util.Optional<UserData> findByEmailID(String emailId);
+	
+}

@@ -1,0 +1,5 @@
+package com.microservices.userservices.configuration;
+
+public class ApplicationConfiguration {
+
+}

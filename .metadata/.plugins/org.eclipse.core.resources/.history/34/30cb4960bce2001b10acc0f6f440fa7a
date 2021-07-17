@@ -1,0 +1,17 @@
+package com.microservices.bookservice.repository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.microservices.bookservice.model.BookData;
+
+
+
+@Repository
+public interface BookDataRepository extends JpaRepository<BookData, UUID> {
+
+	Optional<BookData> findByBookname(String bookname);
+}

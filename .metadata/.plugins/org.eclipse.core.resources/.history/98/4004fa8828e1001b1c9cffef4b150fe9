@@ -1,0 +1,5 @@
+package com.microservices.userservices.dto;
+
+public class ResponseDTO {
+
+}

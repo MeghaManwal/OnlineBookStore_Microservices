@@ -1,0 +1,5 @@
+package com.microservices.userservices.utils;
+
+public class Token {
+
+}

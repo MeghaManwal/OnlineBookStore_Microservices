@@ -1,0 +1,5 @@
+package com.microservices.bookservice.repository;
+
+public interface CustomerDataRepository {
+
+}

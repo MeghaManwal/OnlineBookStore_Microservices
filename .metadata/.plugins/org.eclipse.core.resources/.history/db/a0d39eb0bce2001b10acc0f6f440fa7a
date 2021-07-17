@@ -1,0 +1,5 @@
+package com.microservices.bookservice.utils;
+
+public class Token {
+
+}

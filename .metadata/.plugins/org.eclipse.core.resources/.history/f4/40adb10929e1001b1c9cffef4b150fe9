@@ -1,0 +1,5 @@
+package com.microservices.userservices.exception;
+
+public class UserDataException {
+
+}
